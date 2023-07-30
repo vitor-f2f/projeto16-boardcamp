@@ -1,0 +1,40 @@
+import { db } from "../db.js";
+import Joi from "joi";
+
+const gameSchema = Joi.object({
+    name: Joi.string().required(),
+    image: Joi.string().uri().required(),
+    stockTotal: Joi.number().integer().min(0).required(),
+    pricePerDay: Joi.number().positive().required(),
+});
+
+export const getGames = async (req, res) => {
+    try {
+        const result = await db.query("SELECT * FROM games");
+        res.json(result.rows);
+    } catch (error) {
+        console.error("Erro ao buscar jogos:", error);
+        res.sendStatus(500);
+    }
+};
+
+export const addGame = async (req, res) => {
+    const { error } = gameSchema.validate(req.body);
+
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const { name, image, stockTotal, pricePerDay } = req.body;
+
+    try {
+        const result = await db.query(
+            "INSERT INTO games (name, image, stockTotal, pricePerDay) VALUES ($1, $2, $3, $4) RETURNING *",
+            [name, image, stockTotal, pricePerDay]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error("Erro ao adicionar jogo:", error);
+        res.sendStatus(500);
+    }
+};
