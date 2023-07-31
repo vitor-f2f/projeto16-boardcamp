@@ -9,7 +9,10 @@ const rentSchema = Joi.object({
 
 export const getRent = async (req, res) => {
     try {
-        const query = `SELECT rentals.*, customers.id AS "customer.id", customers.name AS "customer.name", games.id AS "game.id", games.name AS "game.name"
+        const query = `
+        SELECT rentals.*, 
+        json_build_object('id', customers.id, 'name', customers.name) AS customer,
+        json_build_object('id', games.id, 'name', games.name) AS game
         FROM rentals
         JOIN customers ON rentals."customerId" = customers.id
         JOIN games ON rentals."gameId" = games.id`;
