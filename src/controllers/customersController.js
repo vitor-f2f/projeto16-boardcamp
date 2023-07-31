@@ -1,15 +1,6 @@
 import { db } from "../db.js";
 import Joi from "joi";
 
-const custSchema = Joi.object({
-    name: Joi.string().required(),
-    phone: Joi.string()
-        .pattern(/^\d{10,11}$/)
-        .required(),
-    cpf: Joi.string().length(11).pattern(/^\d+$/).required(),
-    birthday: Joi.date().iso().required(),
-});
-
 export const getCusts = async (req, res) => {
     try {
         const result = await db.query(
@@ -23,12 +14,6 @@ export const getCusts = async (req, res) => {
 };
 
 export const addCust = async (req, res) => {
-    const { error } = custSchema.validate(req.body);
-
-    if (error) {
-        return res.status(400).send(error.message);
-    }
-
     const { cpf } = req.body;
 
     try {
@@ -79,11 +64,6 @@ export const searchCust = async (req, res) => {
 export const updateCust = async (req, res) => {
     const custId = req.params.id;
     const newCust = req.body;
-
-    const { error } = custSchema.validate(newCust);
-    if (error) {
-        return res.status(400).send(error.message);
-    }
 
     try {
         const result = await db.query(
