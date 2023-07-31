@@ -39,9 +39,7 @@ export const addCust = async (req, res) => {
         }
 
         const { name, phone, birthday } = req.body;
-        const formattedBirthday = new Date(birthday)
-            .toISOString()
-            .substr(0, 10);
+        const formattedBirthday = new Date(birthday).toISOString().slice(0, 10);
         const query =
             "INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)";
         await db.query(query, [name, phone, cpf, formattedBirthday]);
@@ -107,7 +105,7 @@ export const updateCust = async (req, res) => {
         }
         const formattedBirthday = new Date(newCust.birthday)
             .toISOString()
-            .substr(0, 10);
+            .slice(0, 10);
 
         const update =
             "UPDATE customers SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE id = $5";
