@@ -43,9 +43,11 @@ export const addCust = async (req, res) => {
         }
 
         const { name, phone, birthday } = req.body;
+
+        const formattedBirthday = birthday.slice(0, 10);
         const query =
             "INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)";
-        await db.query(query, [name, phone, cpf, birthday]);
+        await db.query(query, [name, phone, cpf, formattedBirthday]);
 
         return res.sendStatus(201);
     } catch (error) {
