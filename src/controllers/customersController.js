@@ -13,7 +13,7 @@ const custSchema = Joi.object({
 export const getCusts = async (req, res) => {
     try {
         const result = await db.query("SELECT * FROM customers");
-        res.json(result.rows);
+        res.send(result.rows);
     } catch (error) {
         console.error("Erro ao buscar clientes:", error);
         res.sendStatus(500);
@@ -24,7 +24,7 @@ export const addCust = async (req, res) => {
     const { error } = custSchema.validate(req.body);
 
     if (error) {
-        return res.status(400).json({ error: error.details[0].message });
+        return res.status(400).send(error.message);
     }
 
     const { cpf } = req.body;
@@ -35,7 +35,7 @@ export const addCust = async (req, res) => {
             [cpf]
         );
         if (exists.length > 0) {
-            return res.status(409).json({ error: "CPF já está em uso." });
+            return res.status(409).send("CPF já está em uso.");
         }
 
         const { name, phone, birthday } = req.body;
@@ -46,7 +46,7 @@ export const addCust = async (req, res) => {
             "INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)";
         await db.query(query, [name, phone, cpf, formattedBirthday]);
 
-        return res.status(201).json({ message: "Cliente adicionado." });
+        return res.sendStatus(201);
     } catch (error) {
         console.error("Erro ao adicionar cliente:", error);
         res.sendStatus(500);
@@ -63,9 +63,9 @@ export const searchCust = async (req, res) => {
         if (!customer) {
             return res
                 .status(404)
-                .json({ error: "Não foi encontrado cliente com esse ID." });
+                .send("Não foi encontrado cliente com esse ID.");
         }
-        return res.json(customer);
+        return res.send(customer);
     } catch (error) {
         console.error("Erro ao buscar cliente por ID:", error);
         res.sendStatus(500);
@@ -78,7 +78,7 @@ export const updateCust = async (req, res) => {
 
     const { error } = custSchema.validate(newCust);
     if (error) {
-        return res.status(400).json({ error: error.details[0].message });
+        return res.status(400).send(error.message);
     }
 
     try {
@@ -89,7 +89,7 @@ export const updateCust = async (req, res) => {
         if (!customer) {
             return res
                 .status(404)
-                .json({ error: "Não foi encontrado cliente com esse ID." });
+                .send("Não foi encontrado cliente com esse ID.");
         }
 
         if (newCust.cpf !== customer.cpf) {
@@ -102,7 +102,7 @@ export const updateCust = async (req, res) => {
             if (exists) {
                 return res
                     .status(409)
-                    .json({ error: "CPF já está em uso por outro cliente." });
+                    .send("CPF já está em uso por outro cliente.");
             }
         }
         const formattedBirthday = new Date(newCust.birthday)
@@ -119,7 +119,7 @@ export const updateCust = async (req, res) => {
             custId,
         ]);
 
-        return res.json({ message: "Cliente atualizado com sucesso" });
+        return res.sendStatus(200);
     } catch (error) {
         console.error("Erro ao atualizar cliente:", error);
         res.sendStatus(500);
