@@ -30,19 +30,22 @@ export const addCust = async (req, res) => {
     const { cpf } = req.body;
 
     try {
-        const exists = await db.query(
+        const cpfRes = await db.query(
             "SELECT * FROM customers WHERE cpf = $1",
             [cpf]
         );
-        if (exists.length > 0) {
-            return res.status(409).send("CPF já está em uso.");
+        const exists = cpfRes.rows[0];
+
+        if (exists) {
+            return res
+                .status(409)
+                .send("CPF já está em uso por outro cliente.");
         }
 
         const { name, phone, birthday } = req.body;
-        const formattedBirthday = new Date(birthday).toISOString().slice(0, 10);
         const query =
             "INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)";
-        await db.query(query, [name, phone, cpf, formattedBirthday]);
+        await db.query(query, [name, phone, cpf, birthday]);
 
         return res.sendStatus(201);
     } catch (error) {
