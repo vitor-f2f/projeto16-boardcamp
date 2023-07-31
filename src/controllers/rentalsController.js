@@ -126,4 +126,31 @@ export const finishRent = async (req, res) => {
     }
 };
 
-export const deleteRent = async (req, res) => {};
+export const deleteRent = async (req, res) => {
+    const rentId = req.params.id;
+
+    try {
+        const rentalCheck = await db.query(
+            `SELECT * FROM rentals WHERE id = ${rentId}`
+        );
+        const rental = rentalCheck.rows[0];
+        
+        if (!rental) {
+            return res.status(404).send("Não foi encontrado alugel com esse ID.")
+        }
+
+        if (rental.returnDate === null) {
+            return res.status(400).send("Esse aluguel ainda está em andamento.")
+        }
+
+        const query = `
+        DELETE FROM rentals
+        WHERE id = $1`;
+        await db.query(query, [rentId]);
+
+        return res.sendStatus(200);
+    } catch (error) {
+        console.error("Erro ao concluir aluguel:", error);
+        res.sendStatus(500);
+    }
+};
