@@ -93,17 +93,19 @@ export const finishRent = async (req, res) => {
             `SELECT * FROM rentals WHERE id = ${rentId}`
         );
         const rental = rentalCheck.rows[0];
-        
+
         if (!rental) {
-            return res.status(404).send("Não foi encontrado alugel com esse ID.")
+            return res
+                .status(404)
+                .send("Não foi encontrado alugel com esse ID.");
         }
 
         if (rental.returnDate !== null) {
-            return res.status(400).send("Esse aluguel já foi finalizado.")
+            return res.status(400).send("Esse aluguel já foi finalizado.");
         }
-        const currentDate = dayjs().format('YYYY-MM-DD');
+        const currentDate = dayjs().format("YYYY-MM-DD");
         const rentalDate = rental.rentDate;
-        const diff = dayjs(rentalDate).diff(dayjs(currentDate), 'day');
+        const diff = dayjs(currentDate).diff(dayjs(rentalDate), "day");
         let delayFee;
         if (diff > rental.daysRented) {
             const ppd = rental.originalPrice / rental.daysRented;
@@ -111,7 +113,7 @@ export const finishRent = async (req, res) => {
         } else {
             delayFee = 0;
         }
-        console.log(`diff: ${diff}\nfee: ${delayFee}`)
+        console.log(`diff: ${diff}\nfee: ${delayFee}`);
 
         const query = `
         UPDATE rentals
@@ -135,13 +137,17 @@ export const deleteRent = async (req, res) => {
             `SELECT * FROM rentals WHERE id = ${rentId}`
         );
         const rental = rentalCheck.rows[0];
-        
+
         if (!rental) {
-            return res.status(404).send("Não foi encontrado alugel com esse ID.")
+            return res
+                .status(404)
+                .send("Não foi encontrado alugel com esse ID.");
         }
 
         if (rental.returnDate === null) {
-            return res.status(400).send("Esse aluguel ainda está em andamento.")
+            return res
+                .status(400)
+                .send("Esse aluguel ainda está em andamento.");
         }
 
         const query = `
