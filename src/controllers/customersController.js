@@ -45,11 +45,9 @@ export const addCust = async (req, res) => {
         }
 
         const { name, phone, birthday } = req.body;
-
-        const formattedBirthday = dayjs(birthday).format("YYYY-MM-DD");
         const query =
             "INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)";
-        await db.query(query, [name, phone, cpf, formattedBirthday]);
+        await db.query(query, [name, phone, cpf, birthday]);
 
         return res.sendStatus(201);
     } catch (error) {
@@ -111,10 +109,15 @@ export const updateCust = async (req, res) => {
                     .send("CPF já está em uso por outro cliente.");
             }
         }
-        const formattedBirthday = dayjs(birthday).format("YYYY-MM-DD");
 
-        const update = `UPDATE customers SET name = ${newCust.name}, phone = ${newCust.phone}, cpf = ${newCust.cpf}, birthday = ${formattedBirthday} WHERE id = ${custId}`;
-        await db.query(update);
+        const update = `UPDATE customers SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE id = $5`;
+        await db.query(update, [
+            newCust.name,
+            newCust.phone,
+            newCust.cpf,
+            newCust.birthday,
+            custId,
+        ]);
 
         return res.sendStatus(200);
     } catch (error) {
