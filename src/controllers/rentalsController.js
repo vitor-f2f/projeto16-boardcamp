@@ -58,8 +58,11 @@ export const addRent = async (req, res) => {
         const originalPrice = daysRented * game.pricePerDay;
         const rentDate = new Date().toISOString().slice(0, 10);
 
-        const addQuery = `INSERT INTO rentals ("customerId", "gameId", "rentDate", "returnDate", "originalPrice", "delayFee") VALUES (${customerId}, ${gameId}, ${rentDate}, NULL, ${originalPrice}, NULL)`;
-        await db.query(addQuery);
+        const addQuery = `
+            INSERT INTO rentals ("customerId", "gameId", "rentDate", "returnDate", "originalPrice", "delayFee")
+            VALUES ($1, $2, $3, NULL, $4, NULL)
+        `;
+        await db.query(addQuery, [customerId, gameId, rentDate, originalPrice]);
 
         res.sendStatus(201);
     } catch (error) {
