@@ -39,9 +39,12 @@ export const addCust = async (req, res) => {
         }
 
         const { name, phone, birthday } = req.body;
+        const formattedBirthday = new Date(birthday)
+            .toISOString()
+            .substr(0, 10);
         const query =
             "INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)";
-        await db.query(query, [name, phone, cpf, birthday]);
+        await db.query(query, [name, phone, cpf, formattedBirthday]);
 
         return res.status(201).json({ message: "Cliente adicionado." });
     } catch (error) {
@@ -102,6 +105,9 @@ export const updateCust = async (req, res) => {
                     .json({ error: "CPF já está em uso por outro cliente." });
             }
         }
+        const formattedBirthday = new Date(newCust.birthday)
+            .toISOString()
+            .substr(0, 10);
 
         const update =
             "UPDATE customers SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE id = $5";
@@ -109,7 +115,7 @@ export const updateCust = async (req, res) => {
             newCust.name,
             newCust.phone,
             newCust.cpf,
-            newCust.birthday,
+            formattedBirthday,
             custId,
         ]);
 
