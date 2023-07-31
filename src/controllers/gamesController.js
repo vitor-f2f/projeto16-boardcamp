@@ -28,7 +28,9 @@ export const addGame = async (req, res) => {
     const { name, image, stockTotal, pricePerDay } = req.body;
 
     try {
-        const exists = await db.query(`SELECT FROM games WHERE name = ${name}`);
+        const exists = await db.query(`SELECT FROM games WHERE name = $1`, [
+            name,
+        ]);
         if (exists.rows.length > 0) {
             return res.status(409).send("Este jogo já existe.");
         }

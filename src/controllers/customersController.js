@@ -95,7 +95,8 @@ export const updateCust = async (req, res) => {
 
         if (newCust.cpf !== customer.cpf) {
             const cpfRes = await db.query(
-                `SELECT * FROM customers WHERE cpf = ${newCust.cpf}`
+                "SELECT * FROM customers WHERE cpf = $1",
+                [cpf]
             );
             const exists = cpfRes.rows[0];
 
