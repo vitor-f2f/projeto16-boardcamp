@@ -27,8 +27,7 @@ export const addRent = async (req, res) => {
     const { customerId, gameId, daysRented } = req.body;
     try {
         const customerCheck = await db.query(
-            "SELECT * FROM customers WHERE id = $1",
-            [customerId]
+            `SELECT * FROM customers WHERE id = ${customerId}`
         );
         const customer = customerCheck.rows[0];
 
@@ -36,9 +35,9 @@ export const addRent = async (req, res) => {
             return res.status(400).send("Cliente não encontrado.");
         }
 
-        const gameQuery = await db.query("SELECT * FROM games WHERE id = $1", [
-            gameId,
-        ]);
+        const gameQuery = await db.query(
+            `SELECT * FROM games WHERE id = ${gameId}`
+        );
         const game = gameQuery.rows[0];
 
         if (!game) {
@@ -46,8 +45,7 @@ export const addRent = async (req, res) => {
         }
 
         const rentalsQuery = await db.query(
-            "SELECT COUNT(*) AS count FROM rentals WHERE gameId = $1 AND returnDate IS NULL",
-            [gameId]
+            `SELECT COUNT(*) AS count FROM rentals WHERE "gameId" = ${gameId} AND "returnDate" IS NULL`
         );
 
         const rentalsTotal = parseInt(rentalsQuery.rows[0].count);
@@ -60,10 +58,8 @@ export const addRent = async (req, res) => {
         const originalPrice = daysRented * game.pricePerDay;
         const rentDate = new Date().toISOString().slice(0, 10);
 
-        const addQuery = await db.query(
-            "INSERT INTO rentals (customerId, gameId, rentDate, returnDate, originalPrice, delayFee) VALUES ($1, $2, $3, NULL, $4, NULL)",
-            [customerId, gameId, rentDate, originalPrice]
-        );
+        const addQuery = `INSERT INTO rentals ("customerId", "gameId", "rentDate", "returnDate", "originalPrice", "delayFee") VALUES (${customerId}, ${gameId}, ${rentDate}, NULL, ${originalPrice}, NULL)`;
+        await db.query(addQuery);
 
         res.sendStatus(201);
     } catch (error) {

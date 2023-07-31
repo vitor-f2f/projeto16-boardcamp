@@ -80,9 +80,9 @@ export const updateCust = async (req, res) => {
     }
 
     try {
-        const result = await db.query("SELECT * FROM customers WHERE id = $1", [
-            custId,
-        ]);
+        const result = await db.query(
+            `SELECT * FROM customers WHERE id = ${custId}`
+        );
         const customer = result.rows[0];
         if (!customer) {
             return res
@@ -92,8 +92,7 @@ export const updateCust = async (req, res) => {
 
         if (newCust.cpf !== customer.cpf) {
             const cpfRes = await db.query(
-                "SELECT * FROM customers WHERE cpf = $1 AND id <> $2",
-                [newCust.cpf, custId]
+                `SELECT * FROM customers WHERE cpf = ${newCust.cpf}`
             );
             const exists = cpfRes.rows[0];
 
@@ -107,15 +106,8 @@ export const updateCust = async (req, res) => {
             .toISOString()
             .slice(0, 10);
 
-        const update =
-            "UPDATE customers SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE id = $5";
-        await db.query(update, [
-            newCust.name,
-            newCust.phone,
-            newCust.cpf,
-            formattedBirthday,
-            custId,
-        ]);
+        const update = `UPDATE customers SET name = ${newCust.name}, phone = ${newCust.phone}, cpf = ${newCust.cpf}, birthday = ${formattedBirthday} WHERE id = ${custId}`;
+        await db.query(update);
 
         return res.sendStatus(200);
     } catch (error) {

@@ -28,8 +28,7 @@ export const addGame = async (req, res) => {
     const { name, image, stockTotal, pricePerDay } = req.body;
 
     try {
-        const query =
-            "INSERT INTO games (name, image, stockTotal, pricePerDay) VALUES ($1, $2, $3, $4)";
+        const query = `INSERT INTO games (name, image, "stockTotal", "pricePerDay") VALUES ($1, $2, $3, $4)`;
         await db.query(query, [name, image, stockTotal, pricePerDay]);
         res.sendStatus(201);
     } catch (error) {
