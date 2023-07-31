@@ -1,5 +1,5 @@
 import express from "express";
-import { validateCust } from "../middleware/validateCust";
+import { validateCust } from "../middleware/validateCust.js";
 
 import {
     getCusts,

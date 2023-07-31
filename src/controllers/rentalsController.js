@@ -4,7 +4,7 @@ import Joi from "joi";
 const rentSchema = Joi.object({
     customerId: Joi.number().required(),
     gameId: Joi.number().required(),
-    daysRented: Joi.integer().min(1).number().required(),
+    daysRented: Joi.number().integer().min(1).required(),
 });
 
 export const getRent = async (req, res) => {
