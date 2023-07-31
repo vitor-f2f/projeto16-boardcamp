@@ -1,5 +1,6 @@
 import { db } from "../db.js";
 import Joi from "joi";
+import dayjs from "dayjs";
 
 const rentSchema = Joi.object({
     customerId: Joi.number().required(),
@@ -84,6 +85,45 @@ export const addRent = async (req, res) => {
     }
 };
 
-export const finishRent = async (req, res) => {};
+export const finishRent = async (req, res) => {
+    const rentId = req.params.id;
+
+    try {
+        const rentalCheck = await db.query(
+            `SELECT * FROM rentals WHERE id = ${rentId}`
+        );
+        const rental = rentalCheck.rows[0];
+        
+        if (!rental) {
+            return res.status(404).send("Não foi encontrado alugel com esse ID.")
+        }
+
+        if (rental.returnDate !== null) {
+            return res.status(400).send("Esse aluguel já foi finalizado.")
+        }
+        const currentDate = dayjs().format('YYYY-MM-DD');
+        const rentalDate = rental.rentDate;
+        const diff = dayjs(rentalDate).diff(dayjs(currentDate), 'day');
+        let delayFee;
+        if (diff > rental.daysRented) {
+            const ppd = rental.originalPrice / rental.daysRented;
+            delayFee = ppd * (diff - rental.daysRented);
+        } else {
+            delayFee = 0;
+        }
+
+        const query = `
+        UPDATE rentals
+        SET "returnDate" = $1, "delayFee" = $2
+        WHERE id = $3`;
+
+        await db.query(query, [currentDate, delayFee, rentId]);
+
+        return res.sendStatus(200);
+    } catch (error) {
+        console.error("Erro ao concluir aluguel:", error);
+        res.sendStatus(500);
+    }
+};
 
 export const deleteRent = async (req, res) => {};
