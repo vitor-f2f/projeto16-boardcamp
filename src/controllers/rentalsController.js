@@ -111,6 +111,7 @@ export const finishRent = async (req, res) => {
         } else {
             delayFee = 0;
         }
+        console.log(`diff: ${diff}\nfee: ${delayFee}`)
 
         const query = `
         UPDATE rentals
