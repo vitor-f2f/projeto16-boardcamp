@@ -30,9 +30,10 @@ export const addCust = async (req, res) => {
     const { cpf } = req.body;
 
     try {
-        const exists = await db.query("SELECT * FROM customers WERE cpf = $1", [
-            cpf,
-        ]);
+        const exists = await db.query(
+            "SELECT * FROM customers WHERE cpf = $1",
+            [cpf]
+        );
         if (exists.length > 0) {
             return res.status(409).json({ error: "CPF já está em uso." });
         }
