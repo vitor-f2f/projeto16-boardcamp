@@ -44,7 +44,7 @@ export const addCust = async (req, res) => {
 
         const { name, phone, birthday } = req.body;
 
-        const formattedBirthday = birthday.slice(0, 10);
+        const formattedBirthday = dayjs(birthday).format("YYYY-MM-DD");
         const query =
             "INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)";
         await db.query(query, [name, phone, cpf, formattedBirthday]);
@@ -108,9 +108,7 @@ export const updateCust = async (req, res) => {
                     .send("CPF já está em uso por outro cliente.");
             }
         }
-        const formattedBirthday = new Date(newCust.birthday)
-            .toISOString()
-            .slice(0, 10);
+        const formattedBirthday = dayjs(birthday).format("YYYY-MM-DD");
 
         const update = `UPDATE customers SET name = ${newCust.name}, phone = ${newCust.phone}, cpf = ${newCust.cpf}, birthday = ${formattedBirthday} WHERE id = ${custId}`;
         await db.query(update);
