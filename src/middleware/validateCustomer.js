@@ -9,7 +9,7 @@ const custSchema = Joi.object({
     birthday: Joi.date().iso().required(),
 });
 
-export const validateCust = (req, res, next) => {
+export const validateCustomer = (req, res, next) => {
     const { error } = custSchema.validate(req.body);
 
     if (error) {

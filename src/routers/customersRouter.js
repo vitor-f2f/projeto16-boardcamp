@@ -1,5 +1,5 @@
 import express from "express";
-import { validateCust } from "../middleware/validateCust.js";
+import { validateCustomer } from "../middleware/validateCustomer.js";
 
 import {
     getCusts,
@@ -12,6 +12,6 @@ const customersRouter = express.Router();
 
 customersRouter.get("/customers", getCusts);
 customersRouter.get("/customers/:id", searchCust);
-customersRouter.post("/customers", validateCust, addCust);
-customersRouter.put("/customers/:id", validateCust, updateCust);
+customersRouter.post("/customers", validateCustomer, addCust);
+customersRouter.put("/customers/:id", validateCustomer, updateCust);
 export default customersRouter;

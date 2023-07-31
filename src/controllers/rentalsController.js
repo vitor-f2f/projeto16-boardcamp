@@ -9,7 +9,11 @@ const rentSchema = Joi.object({
 
 export const getRent = async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM rentals");
+        const query = `SELECT rentals.*, customers.id AS "customer.id", customers.name AS "customer.name", games.id AS "game.id", games.name AS "game.name"
+        FROM rentals
+        JOIN customers ON rentals."customerId" = customers.id
+        JOIN games ON rentals."gameId" = games.id`;
+        const result = await db.query(query);
         res.send(result.rows);
     } catch (error) {
         console.error("Erro ao buscar aluguéis:", error);
