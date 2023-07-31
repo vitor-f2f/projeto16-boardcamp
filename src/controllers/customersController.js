@@ -12,7 +12,9 @@ const custSchema = Joi.object({
 
 export const getCusts = async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM customers");
+        const result = await db.query(
+            "SELECT id, name, phone, cpf, to_char(birthday, 'YYYY-MM-DD') as birthday FROM customers"
+        );
         res.send(result.rows);
     } catch (error) {
         console.error("Erro ao buscar clientes:", error);
@@ -59,9 +61,10 @@ export const addCust = async (req, res) => {
 export const searchCust = async (req, res) => {
     const custId = req.params.id;
     try {
-        const result = await db.query("SELECT * FROM customers WHERE id = $1", [
-            custId,
-        ]);
+        const result = await db.query(
+            "SELECT id, name, phone, cpf, to_char(birthday, 'YYYY-MM-DD') as birthday FROM customers WHERE id = $1",
+            [custId]
+        );
         const customer = result.rows[0];
         if (!customer) {
             return res
