@@ -28,10 +28,9 @@ export const addGame = async (req, res) => {
     const { name, image, stockTotal, pricePerDay } = req.body;
 
     try {
-        const result = await db.query(
-            "INSERT INTO games (name, image, stockTotal, pricePerDay) VALUES ($1, $2, $3, $4) RETURNING *",
-            [name, image, stockTotal, pricePerDay]
-        );
+        const query =
+            "INSERT INTO games (name, image, stockTotal, pricePerDay) VALUES ($1, $2, $3, $4)";
+        await db.query(query, [name, image, stockTotal, pricePerDay]);
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error("Erro ao adicionar jogo:", error);
